@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Questionnaire</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    #question {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    #answer {
+      margin-bottom: 20px;
+    }
+
+    #timer {
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Questionnaire</h1>
+
+  <button id="startButton">Start</button>
+
+  <div id="questionContainer" style="display: none;">
+    <h2 id="question"></h2>
+    <textarea id="answer" rows="4" cols="50"></textarea>
+    <p>Words: <span id="wordCount">0</span></p>
+  </div>
+
+  <div id="timer"></div>
+
+  <script>
+    var questions = [
+      "The number of people who are at risk of serious health problems due to being overweight is increasing. \n What is the reason for the growth in overweight people in society? \n How can this problem be solved?"
+      // Add more questions here
+    ];
+
+    var startButton = document.getElementById("startButton");
+    var questionContainer = document.getElementById("questionContainer");
+    var questionElement = document.getElementById("question");
+    var answerElement = document.getElementById("answer");
+    var wordCountElement = document.getElementById("wordCount");
+    var timerElement = document.getElementById("timer");
+
+    var timer;
+    var timeLimit = 40 * 60; // 40 minutes in seconds
+
+    startButton.addEventListener("click", startQuestionnaire);
+
+    function startQuestionnaire() {
+      // Hide the start button
+      startButton.style.display = "none";
+      
+      // Show the question container
+      questionContainer.style.display = "block";
+
+      // Pick a random question
+      var randomIndex = Math.floor(Math.random() * questions.length);
+      var randomQuestion = questions[randomIndex];
+
+      // Display the question
+      questionElement.textContent = randomQuestion;
+
+      // Reset word count
+      wordCountElement.textContent = "0";
+
+      // Start the timer
+      startTimer();
+    }
+
+    function startTimer() {
+      var startTime = Math.floor(Date.now() / 1000);
+      
+      timer = setInterval(function() {
+        var currentTime = Math.floor(Date.now() / 1000);
+        var elapsedTime = currentTime - startTime;
+        var remainingTime = timeLimit - elapsedTime;
+
+        // Format the remaining time as MM:SS
+        var minutes = Math.floor(remainingTime / 60);
+        var seconds = remainingTime % 60;
+        var formattedTime = ("0" + minutes).slice(-2) + ":" + ("0" + seconds).slice(-2);
+
+        // Update the timer display
+        timerElement.textContent = formattedTime;
+
+        // If time is up, stop the timer
+        if (remainingTime <= 0) {
+          clearInterval(timer);
+          timerElement.textContent = "Time's up!";
+          answerElement.disabled = true; // Disable the answer textarea
+        }
+      }, 1000);
+    }
+
+    answerElement.addEventListener("input", function() {
+      var wordCount = answerElement.value.trim().split(/\s+/).length;
+      wordCountElement.textContent = wordCount;
+    });
+  </script>
+</body>
+</html>
