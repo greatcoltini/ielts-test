@@ -30,13 +30,17 @@
 
   <div id="questionContainer" style="display: none;">
     <h2 id="question"></h2>
-    <textarea id="answer" rows="4" cols="50"></textarea>
+    <textarea id="answer" rows="10" cols="200" spellcheck="false"></textarea>
     <p>Words: <span id="wordCount">0</span></p>
+    <button id="gradeButton" style="display: none">Grade Answer </button>
   </div>
 
   <div id="timer"></div>
 
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
   <script>
+    
     var questions = [
       "The number of people who are at risk of serious health problems due to being overweight is increasing. \n\n What is the reason for the growth in overweight people in society? \n\n How can this problem be solved?",
       "Shopping is becoming more and more popular as a leisure activity. \n\n However, some people feel that this has both positive and negative effects. \n\n Why is shopping so popular? \n\n What effects does its increase in popularity have on individuals and on society?",
@@ -52,6 +56,7 @@
     var answerElement = document.getElementById("answer");
     var wordCountElement = document.getElementById("wordCount");
     var timerElement = document.getElementById("timer");
+    var gradeButton = document.getElementById("gradeButton");
 
     var timer;
     var timeLimit = 40 * 60; // 40 minutes in seconds
@@ -100,6 +105,7 @@
           clearInterval(timer);
           timerElement.textContent = "Time's up!";
           answerElement.disabled = true; // Disable the answer textarea
+          //gradeButton.style.display = "block";
         }
       }, 1000);
     }
@@ -108,6 +114,47 @@
       var wordCount = answerElement.value.trim().split(/\s+/).length;
       wordCountElement.textContent = wordCount;
     });
+
+    gradeButton.addEventListener("click", OpenaiFetchAPI);
+
+    function OpenaiFetchAPI() {
+
+      var answer = answerElement.value;
+      var prompt = "Grade the following answer based on IELTS exam standards:\n\nAnswer: " + answer + "\n\nScore: ";
+    
+      console.log("Calling GPT3")
+      var url = "https://api.openai.com/v1/engines/davinci/completions";
+      var bearer = 'Bearer '
+      fetch(url, {
+          method: 'POST',
+          headers: {
+              'Authorization': bearer,
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              "prompt": "Once upon a time",
+              "max_tokens": 1,
+              "temperature": 0.2,
+              "top_p": 1,
+              "n": 1,
+              "stream": false,
+              "logprobs": null,
+              "stop": "\n"
+          })
+
+      }).then(response => {
+          
+          return response.json()
+         
+      }).then(data=>{
+          console.log(data)
+          
+      })
+          .catch(error => {
+              console.log('Something bad happened ' + error)
+          });
+  
+  }
   </script>
 </body>
 </html>
